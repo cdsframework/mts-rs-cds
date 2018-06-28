@@ -7,23 +7,27 @@
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version. You should have received a copy of the GNU Lesser
- * General Public License along with this program. If not, see <http://www.gnu.org/licenses/> for more
- * details.
+ * General Public License along with this program. If not, see
+ * <http://www.gnu.org/licenses/> for more details.
  *
- * The above-named contributors (HLN Consulting, LLC) are also licensed by the New York City
- * Department of Health and Mental Hygiene, Bureau of Immunization to have (without restriction,
- * limitation, and warranty) complete irrevocable access and rights to this project.
+ * The above-named contributors (HLN Consulting, LLC) are also licensed by the
+ * New York City Department of Health and Mental Hygiene, Bureau of Immunization
+ * to have (without restriction, limitation, and warranty) complete irrevocable
+ * access and rights to this project.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; THE
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; THE
  *
- * SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDERS, IF ANY, OR DEVELOPERS BE LIABLE FOR
- * ANY CLAIM, DAMAGES, OR OTHER LIABILITY OF ANY KIND, ARISING FROM, OUT OF, OR IN CONNECTION WITH
- * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS, IF ANY, OR DEVELOPERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+ * OTHER LIABILITY OF ANY KIND, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * For more information about this software, see https://www.hln.com/services/open-source/ or send
- * correspondence to ice@hln.com.
+ * For more information about this software, see
+ * https://www.hln.com/services/open-source/ or send correspondence to
+ * ice@hln.com.
  */
 package org.cdsframework.rs.cds;
 
@@ -54,6 +58,7 @@ import org.cdsframework.dto.DataTemplateDTO;
 import org.cdsframework.dto.DataTemplateLinkRelDTO;
 import org.cdsframework.dto.DataTemplateNodeRelDTO;
 import org.cdsframework.dto.OpenCdsConceptDTO;
+import org.cdsframework.dto.OpenCdsConceptDeploymentLogDTO;
 import org.cdsframework.dto.OpenCdsConceptRelDTO;
 import org.cdsframework.dto.TestCaseDTO;
 import org.cdsframework.dto.ValueSetCdsCodeRelDTO;
@@ -272,12 +277,32 @@ public class PluginConfigCds extends BasePluginConfig {
         registerConfig(OpenCdsConceptDTO.class, new CatResourceConfig(OpenCdsConceptDTO.class) {
             @Override
             public void initialize() {
+                setBaseHeader("Concept");
+                addDataTableColumn("code");
+                addDataTableColumn("displayName", "Name");
+                addDataTableColumn("lastDeployedDate", "Last Deployed");
             }
         });
 
         registerConfig(OpenCdsConceptRelDTO.class, new CatResourceConfig(OpenCdsConceptRelDTO.class) {
             @Override
             public void initialize() {
+                setBaseHeader("Concept Mapping");
+                addDataTableColumn("oid", "OID");
+                addDataTableColumn("name");
+                addDataTableColumn("cdsCodeDTO", "Code");
+                addDataTableColumn("mappingType", "Type");
+                addDataTableColumn("lastDeployedDate", "Last Deployed");
+            }
+        });
+
+        registerConfig(OpenCdsConceptDeploymentLogDTO.class, new CatResourceConfig(OpenCdsConceptDeploymentLogDTO.class) {
+            @Override
+            public void initialize() {
+                setBaseHeader("Concept Deployment Log");
+                addDataTableColumn("deploymentAction", "Action");
+                addDataTableColumn("deploymentEnvironment", "Environment");
+                addDataTableColumn("lastModDatetime", "Deployed");
             }
         });
 
