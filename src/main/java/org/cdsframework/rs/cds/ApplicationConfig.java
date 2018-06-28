@@ -54,7 +54,6 @@ import org.cdsframework.dto.DataTemplateDTO;
 import org.cdsframework.dto.DataTemplateLinkRelDTO;
 import org.cdsframework.dto.DataTemplateNodeRelDTO;
 import org.cdsframework.dto.OpenCdsConceptDTO;
-import org.cdsframework.dto.OpenCdsConceptDeploymentLogDTO;
 import org.cdsframework.dto.OpenCdsConceptRelDTO;
 import org.cdsframework.dto.TestCaseDTO;
 import org.cdsframework.dto.ValueSetCdsCodeRelDTO;
@@ -102,7 +101,6 @@ public class ApplicationConfig extends BaseResourceConfig {
         dtoClasses.add(DataTemplateNodeRelDTO.class);
         dtoClasses.add(OpenCdsConceptDTO.class);
         dtoClasses.add(OpenCdsConceptRelDTO.class);
-        dtoClasses.add(OpenCdsConceptDeploymentLogDTO.class);
         dtoClasses.add(TestCaseDTO.class);
         dtoClasses.add(ValueSetCdsCodeRelDTO.class);
         dtoClasses.add(ValueSetDTO.class);
