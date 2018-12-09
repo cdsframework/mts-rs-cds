@@ -47,7 +47,9 @@ public class CdsConfiguration {
     private static final String OPENCDS_REST_USERNAME;
     private static final String OPENCDS_REST_PASSWORD;
     private static final String OPENCDS_REST_CDM_ENDPOINT;
+    private static final String OPENCDS_REST_CDM_ENDPOINT_TEST;
     private static final String OPENCDS_REST_KM_ENDPOINT;
+    private static final String OPENCDS_REST_KM_ENDPOINT_TEST;
     private static final String OPENCDS_REST_HOST_TEST;
     private static final int OPENCDS_REST_PORT_TEST;
     private static final String OPENCDS_REST_USERNAME_TEST;
@@ -61,7 +63,9 @@ public class CdsConfiguration {
         OPENCDS_REST_USERNAME = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_USERNAME");
         OPENCDS_REST_PASSWORD = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_PASSWORD");
         OPENCDS_REST_CDM_ENDPOINT = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_CDM_ENDPOINT", "");
+        OPENCDS_REST_CDM_ENDPOINT_TEST = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_CDM_ENDPOINT_TEST", "");
         OPENCDS_REST_KM_ENDPOINT = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_KM_ENDPOINT", "");
+        OPENCDS_REST_KM_ENDPOINT_TEST = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_KM_ENDPOINT_TEST", "");
 
         OPENCDS_REST_HOST_TEST = INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_HOST_TEST");
         OPENCDS_REST_PORT_TEST = Integer.parseInt(INSTANCE_PROPERTIES.getProperty("OPENCDS_REST_PORT_TEST"));
@@ -73,7 +77,9 @@ public class CdsConfiguration {
         logger.info(METHODNAME, "OPENCDS_REST_USERNAME=", OPENCDS_REST_USERNAME);
 //        logger.info(METHODNAME, "OPENCDS_REST_PASSWORD=", OPENCDS_REST_PASSWORD);
         logger.info(METHODNAME, "OPENCDS_REST_CDM_ENDPOINT=", OPENCDS_REST_CDM_ENDPOINT);
+        logger.info(METHODNAME, "OPENCDS_REST_CDM_ENDPOINT_TEST=", OPENCDS_REST_CDM_ENDPOINT_TEST);
         logger.info(METHODNAME, "OPENCDS_REST_KM_ENDPOINT=", OPENCDS_REST_KM_ENDPOINT);
+        logger.info(METHODNAME, "OPENCDS_REST_KM_ENDPOINT_TEST=", OPENCDS_REST_KM_ENDPOINT_TEST);
 
         logger.info(METHODNAME, "OPENCDS_REST_HOST_TEST=", OPENCDS_REST_HOST_TEST);
         logger.info(METHODNAME, "OPENCDS_REST_PORT_TEST=", OPENCDS_REST_PORT_TEST);
@@ -102,8 +108,16 @@ public class CdsConfiguration {
         return OPENCDS_REST_CDM_ENDPOINT;
     }
 
+    public static String getOpenCdsRestCdmEndpointTest() {
+        return OPENCDS_REST_CDM_ENDPOINT_TEST;
+    }
+
     public static String getOpenCdsRestKmEndpoint() {
         return OPENCDS_REST_KM_ENDPOINT;
+    }
+
+    public static String getOpenCdsRestKmEndpointTest() {
+        return OPENCDS_REST_KM_ENDPOINT_TEST;
     }
 
     public static String getOpenCdsRestHostTest() {
@@ -139,8 +153,8 @@ public class CdsConfiguration {
                 getOpenCdsRestPortTest(),
                 getOpenCdsRestUserNameTest(),
                 getOpenCdsRestPasswordTest(),
-                getOpenCdsRestCdmEndpoint(),
-                getOpenCdsRestKmEndpoint());
+                getOpenCdsRestCdmEndpointTest(),
+                getOpenCdsRestKmEndpointTest());
         return openCDSConfigUploader;
     }
 
