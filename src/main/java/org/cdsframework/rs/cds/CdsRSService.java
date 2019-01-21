@@ -320,9 +320,15 @@ public class CdsRSService extends GeneralRSService {
         List<String> list = new ArrayList<>();
         if ("draft".equalsIgnoreCase(type)) {
             list = VsacUtils.getProfileList(uri, username, password);
-        } else {
+        } else if ("published".equalsIgnoreCase(type)) {
             list = VsacUtils.getVersionList(uri, username, password, oid);
+        } else {
+            throw new MtsException("Type not supported: " + type);
         }
+        logger.info(METHODNAME, "property=", property);
+        logger.info(METHODNAME, "type=", type);
+        logger.info(METHODNAME, "oid=", oid);
+        logger.info(METHODNAME, "sessionId=", sessionId);
         logger.info(METHODNAME, "Value Set Profiles: " + (list != null ? list.size() : "null"));
         Collections.sort(list);
         return list;
