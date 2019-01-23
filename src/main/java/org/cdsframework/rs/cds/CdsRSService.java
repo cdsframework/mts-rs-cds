@@ -333,4 +333,50 @@ public class CdsRSService extends GeneralRSService {
         Collections.sort(list);
         return list;
     }
-}
+
+    @GET
+    @Path("valueset/check/{type}/{oid}/{version_profile}")
+    @Produces({MediaType.APPLICATION_JSON})
+    public boolean checkValueSet(
+            @QueryParam(CoreRsConstants.QUERYPARMPROPERTY) String property,
+            @PathParam("type") final String type,
+            @PathParam("oid") final String oid,
+            @PathParam("version_profile") final String versionProfile,
+            @QueryParam(CoreRsConstants.QUERYPARMSESSION) String sessionId)
+            throws MtsException, ValidationException, NotFoundException, AuthenticationException, AuthorizationException {
+        final String METHODNAME = "checkValueSet ";
+        PropertyBagDTO propertyBagDTO = PropertyBagUtils.getJsonPropertyBagDTO(property);
+        SessionDTO sessionDTO = getSessionDTO(sessionId);
+
+        PropertyBagDTO systemPropertyBagDTO = new PropertyBagDTO();
+        systemPropertyBagDTO.setQueryClass("ByNameScope");
+        SystemPropertyDTO systemPropertyDTO = new SystemPropertyDTO();
+        systemPropertyDTO.setScope("cds");
+        systemPropertyDTO.setName("VSAC_BASE_URI");
+
+        SystemPropertyDTO uriPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+        systemPropertyDTO.setName("VSAC_USERNAME");
+        SystemPropertyDTO usernamePropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+        systemPropertyDTO.setName("VSAC_PASSWORD");
+        SystemPropertyDTO passwordPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+
+        String uri = uriPropertyDTO.getValue();
+        String username = usernamePropertyDTO.getValue();
+        String password = passwordPropertyDTO.getValue();
+
+        List<String> list = new ArrayList<>();
+        if ("draft".equalsIgnoreCase(type)) {
+            list = VsacUtils.getProfileList(uri, username, password);
+        } else if ("published".equalsIgnoreCase(type)) {
+            list = VsacUtils.getVersionList(uri, username, password, oid);
+        } else {
+            throw new MtsException("Type not supported: " + type);
+        }
+        logger.info(METHODNAME, "property=", property);
+        logger.info(METHODNAME, "type=", type);
+        logger.info(METHODNAME, "oid=", oid);
+        logger.info(METHODNAME, "sessionId=", sessionId);
+        logger.info(METHODNAME, "Value Set Profiles: " + (list != null ? list.size() : "null"));
+        Collections.sort(list);
+        return true;
+    }}
