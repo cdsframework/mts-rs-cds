@@ -132,9 +132,9 @@ public class PluginConfigCds extends BasePluginConfig {
             public void initialize() {
                 setBaseHeader("Value Set");
                 addDataTableColumn("name");
-                addDataTableColumn("code");
                 addDataTableColumn("oid", "OID");
-                addDataTableColumn("version");
+                addDataTableColumn("versionStatus");
+                addDataTableColumn("version", "Version/Profile");
                 addDataTableColumn("lastModDatetime");
             }
         });

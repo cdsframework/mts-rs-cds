@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.GET;
@@ -47,6 +48,8 @@ import org.cdsframework.dto.ConceptDeterminationMethodDTO;
 import org.cdsframework.dto.PropertyBagDTO;
 import org.cdsframework.dto.SessionDTO;
 import org.cdsframework.dto.SystemPropertyDTO;
+import org.cdsframework.dto.ValueSetDTO;
+import org.cdsframework.ejb.local.GeneralMGRInterface;
 import org.cdsframework.enumeration.DeploymentEnvironment;
 import org.cdsframework.exceptions.AuthenticationException;
 import org.cdsframework.exceptions.AuthorizationException;
@@ -291,27 +294,29 @@ public class CdsRSService extends GeneralRSService {
     @GET
     @Path("vsac/{type}/{oid}")
     @Produces({MediaType.APPLICATION_JSON})
-    public List<String> getVsacImportList(
+    public Map<String, Map<String, Object>> getVsacImportList(
             @QueryParam(CoreRsConstants.QUERYPARMPROPERTY) String property,
             @PathParam("type") final String type,
             @PathParam("oid") final String oid,
             @QueryParam(CoreRsConstants.QUERYPARMSESSION) String sessionId)
             throws MtsException, ValidationException, NotFoundException, AuthenticationException, AuthorizationException {
         final String METHODNAME = "getVsacImportList ";
-        PropertyBagDTO propertyBagDTO = PropertyBagUtils.getJsonPropertyBagDTO(property);
+        logger.info(METHODNAME, "type=", type);
+        logger.info(METHODNAME, "oid=", oid);
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>();
         SessionDTO sessionDTO = getSessionDTO(sessionId);
 
-        PropertyBagDTO systemPropertyBagDTO = new PropertyBagDTO();
-        systemPropertyBagDTO.setQueryClass("ByNameScope");
+        PropertyBagDTO propertyBagDTO = new PropertyBagDTO();
+        propertyBagDTO.setQueryClass("ByNameScope");
         SystemPropertyDTO systemPropertyDTO = new SystemPropertyDTO();
         systemPropertyDTO.setScope("cds");
         systemPropertyDTO.setName("VSAC_BASE_URI");
 
-        SystemPropertyDTO uriPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+        SystemPropertyDTO uriPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
         systemPropertyDTO.setName("VSAC_USERNAME");
-        SystemPropertyDTO usernamePropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+        SystemPropertyDTO usernamePropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
         systemPropertyDTO.setName("VSAC_PASSWORD");
-        SystemPropertyDTO passwordPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, systemPropertyBagDTO);
+        SystemPropertyDTO passwordPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
 
         String uri = uriPropertyDTO.getValue();
         String username = usernamePropertyDTO.getValue();
@@ -325,12 +330,49 @@ public class CdsRSService extends GeneralRSService {
         } else {
             throw new MtsException("Type not supported: " + type);
         }
+
+        GeneralMGRInterface generalMGR = getGeneralMGR();
+        Collections.sort(list);
+        for (String item : list) {
+            logger.info(METHODNAME, "list item=", item);
+
+            PropertyBagDTO vcPropertyBagDTO = new PropertyBagDTO();
+            vcPropertyBagDTO.setQueryClass("ByOid");
+
+            //Determine if the value set already exists (by oid and version)...
+            ValueSetDTO queryDTO = new ValueSetDTO();
+            queryDTO.setOid(oid);
+            List<ValueSetDTO> results = generalMGR.findByQueryList(queryDTO, sessionDTO, vcPropertyBagDTO);
+            logger.info(METHODNAME, "results=", results);
+
+            ValueSetDTO existingValueSet = VsacUtils.getExistingValueSetFromList(results, item, type);
+
+            if (existingValueSet != null) {
+                Map<String, Object> itemResult = new HashMap<>();
+                itemResult.put("exists", true);
+                String existingType = existingValueSet.getVersionStatus().toLowerCase();
+                if (!"DRAFT".equalsIgnoreCase(existingType) && !"PUBLISHED".equalsIgnoreCase(existingType)) {
+                    if ("ACTIVE".equalsIgnoreCase(existingType) && "N/A".equalsIgnoreCase(existingValueSet.getVersion())) {
+                        existingType = "draft";
+                    } else {
+                        existingType = "published";
+                    }
+                }
+                itemResult.put("type", existingType);
+                result.put(item, itemResult);
+            } else {
+                Map<String, Object> itemResult = new HashMap<>();
+                itemResult.put("exists", false);
+                itemResult.put("type", null);
+                result.put(item, itemResult);
+            }
+        }
         logger.info(METHODNAME, "property=", property);
         logger.info(METHODNAME, "type=", type);
         logger.info(METHODNAME, "oid=", oid);
         logger.info(METHODNAME, "sessionId=", sessionId);
         logger.info(METHODNAME, "Value Set Profiles: " + (list != null ? list.size() : "null"));
-        Collections.sort(list);
-        return list;
+        logger.info(METHODNAME, "result: " + result);
+        return result;
     }
 }
