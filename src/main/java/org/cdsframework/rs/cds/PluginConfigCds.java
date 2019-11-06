@@ -42,8 +42,6 @@ import org.cdsframework.dto.CdsVersionConceptDeterminationMethodRelDTO;
 import org.cdsframework.dto.CdsVersionDTO;
 import org.cdsframework.dto.ConceptDeterminationMethodDTO;
 import org.cdsframework.dto.CriteriaDTO;
-import org.cdsframework.dto.CriteriaDataTemplateRelDTO;
-import org.cdsframework.dto.CriteriaDataTemplateRelNodeDTO;
 import org.cdsframework.dto.CriteriaPredicateDTO;
 import org.cdsframework.dto.CriteriaPredicatePartConceptDTO;
 import org.cdsframework.dto.CriteriaPredicatePartDTO;
@@ -51,12 +49,7 @@ import org.cdsframework.dto.CriteriaPredicatePartRelDTO;
 import org.cdsframework.dto.CriteriaResourceDTO;
 import org.cdsframework.dto.CriteriaResourceParamDTO;
 import org.cdsframework.dto.CriteriaVersionRelDTO;
-import org.cdsframework.dto.DataModelClassDTO;
-import org.cdsframework.dto.DataModelClassNodeDTO;
-import org.cdsframework.dto.DataModelDTO;
-import org.cdsframework.dto.DataTemplateDTO;
-import org.cdsframework.dto.DataTemplateLinkRelDTO;
-import org.cdsframework.dto.DataTemplateNodeRelDTO;
+import org.cdsframework.dto.DataInputNodeDTO;
 import org.cdsframework.dto.OpenCdsConceptDTO;
 import org.cdsframework.dto.OpenCdsConceptDeploymentLogDTO;
 import org.cdsframework.dto.OpenCdsConceptRelDTO;
@@ -184,18 +177,6 @@ public class PluginConfigCds extends BasePluginConfig {
             }
         });
 
-        registerConfig(CriteriaDataTemplateRelDTO.class, new CatResourceConfig(CriteriaDataTemplateRelDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(CriteriaDataTemplateRelNodeDTO.class, new CatResourceConfig(CriteriaDataTemplateRelNodeDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
         registerConfig(CriteriaPredicateDTO.class, new CatResourceConfig(CriteriaPredicateDTO.class) {
             @Override
             public void initialize() {
@@ -238,37 +219,7 @@ public class PluginConfigCds extends BasePluginConfig {
             }
         });
 
-        registerConfig(DataModelClassDTO.class, new CatResourceConfig(DataModelClassDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(DataModelClassNodeDTO.class, new CatResourceConfig(DataModelClassNodeDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(DataModelDTO.class, new CatResourceConfig(DataModelDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(DataTemplateDTO.class, new CatResourceConfig(DataTemplateDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(DataTemplateLinkRelDTO.class, new CatResourceConfig(DataTemplateLinkRelDTO.class) {
-            @Override
-            public void initialize() {
-            }
-        });
-
-        registerConfig(DataTemplateNodeRelDTO.class, new CatResourceConfig(DataTemplateNodeRelDTO.class) {
+        registerConfig(DataInputNodeDTO.class, new CatResourceConfig(DataInputNodeDTO.class) {
             @Override
             public void initialize() {
             }
