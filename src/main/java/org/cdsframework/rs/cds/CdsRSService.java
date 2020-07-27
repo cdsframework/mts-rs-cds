@@ -32,16 +32,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.cdsframework.dto.PropertyBagDTO;
 import org.cdsframework.dto.SessionDTO;
 import org.cdsframework.dto.SystemPropertyDTO;
 import org.cdsframework.dto.ValueSetDTO;
 import org.cdsframework.ejb.local.GeneralMGRInterface;
+import org.cdsframework.enumeration.DeploymentEnvironment;
 import org.cdsframework.exceptions.AuthenticationException;
 import org.cdsframework.exceptions.AuthorizationException;
 import org.cdsframework.exceptions.MtsException;
@@ -49,6 +52,7 @@ import org.cdsframework.exceptions.NotFoundException;
 import org.cdsframework.exceptions.ValidationException;
 import org.cdsframework.rs.GeneralRSService;
 import org.cdsframework.rs.support.CoreRsConstants;
+import org.cdsframework.util.ConceptUtils;
 import org.cdsframework.util.VsacUtils;
 
 /**
@@ -145,5 +149,78 @@ public class CdsRSService extends GeneralRSService {
         logger.info(METHODNAME, "Value Set Profiles: " + (list != null ? list.size() : "null"));
         logger.info(METHODNAME, "result: " + result);
         return result;
+    }
+
+    @GET
+    @Path("concepts/predefaultdeploy/{environment}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    public Response predeployDefaultConceptDeterminationMethod(@HeaderParam("accept") String accept,
+            @PathParam("environment") final String environment,
+            @QueryParam(CoreRsConstants.QUERYPARMSESSION) final String sessionId) {
+        try {
+            SessionDTO sessionDTO = new SessionDTO();
+            sessionDTO.setSessionId(sessionId);
+
+            String code = ConceptUtils.getDefaultCdmCode(sessionDTO);
+            String codeSystem = ConceptUtils.getDefaultCdmCodeSystem(sessionDTO);
+
+            Response result = ConceptUtils.preDeployCdm(accept, environment, codeSystem, code, sessionId);
+            return result;
+        } catch (MtsException | ValidationException | NotFoundException | AuthenticationException
+                | AuthorizationException | RuntimeException e) {
+            logger.error(e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage()).type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("concepts/predeploy/{environment}/{codeSystem}/{code}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    public Response preDeployConceptDeterminationMethod(@HeaderParam("accept") String accept,
+            @PathParam("environment") final String environment,
+            @PathParam("codeSystem") final String codeSystem, @PathParam("code") final String code,
+            @QueryParam(CoreRsConstants.QUERYPARMSESSION) final String sessionId) {
+        try {
+            Response result = ConceptUtils.preDeployCdm(accept, environment, codeSystem, code, sessionId);
+            return result;
+        } catch (Exception e) {
+            logger.error(e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage()).type(MediaType.APPLICATION_JSON)
+                    .build();
+        }
+    }
+
+    @GET
+    @Path("concepts/{environment}/{codeSystem}/{code}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN})
+    public Response getCdm(@PathParam("environment") final String environment, @PathParam("codeSystem") final String codeSystem,
+            @PathParam("code") final String code, @QueryParam(CoreRsConstants.QUERYPARMSESSION) final String sessionId) {
+
+        final String METHODNAME = "getCdm ";
+
+        SessionDTO sessionDTO = new SessionDTO();
+        sessionDTO.setSessionId(sessionId);
+
+        try {
+            DeploymentEnvironment deploymentEnvironment = ConceptUtils.checkConceptInput(environment, codeSystem, code, sessionId,
+                    METHODNAME);
+            Map<String, byte[]> exportData = ConceptUtils.getExportData(codeSystem, code, deploymentEnvironment, sessionDTO);
+
+            String xml = new String(exportData.get("cdm.xml"));
+
+            logger.debug(METHODNAME, "xml=", xml);
+
+            return Response.ok(xml, MediaType.APPLICATION_XML).build();
+
+        } catch (MtsException | ValidationException | NotFoundException | AuthenticationException
+                | AuthorizationException | RuntimeException e) {
+            logger.error(e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage()).type(MediaType.TEXT_PLAIN)
+                    .build();
+        }
     }
 }
