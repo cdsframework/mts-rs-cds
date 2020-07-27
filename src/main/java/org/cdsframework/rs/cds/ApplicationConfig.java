@@ -99,6 +99,7 @@ public class ApplicationConfig extends BaseResourceConfig {
         register(coreJacksonJsonProvider);
         register(org.cdsframework.rs.cds.CdsRSService.class); 
         register(ConfigServiceCds.class);
+        register(HealthCheckService.class);
     }
 
     
