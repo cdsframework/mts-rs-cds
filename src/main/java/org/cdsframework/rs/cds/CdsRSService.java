@@ -88,20 +88,17 @@ public class CdsRSService extends GeneralRSService {
         systemPropertyDTO.setName("VSAC_BASE_URI");
 
         SystemPropertyDTO uriPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
-        systemPropertyDTO.setName("VSAC_USERNAME");
-        SystemPropertyDTO usernamePropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
-        systemPropertyDTO.setName("VSAC_PASSWORD");
-        SystemPropertyDTO passwordPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
+        systemPropertyDTO.setName("VSAC_APIKEY");
+        SystemPropertyDTO apiKeyPropertyDTO = getGeneralMGR().findByQuery(systemPropertyDTO, sessionDTO, propertyBagDTO);
 
         String uri = uriPropertyDTO.getValue();
-        String username = usernamePropertyDTO.getValue();
-        String password = passwordPropertyDTO.getValue();
+        String apiKey = apiKeyPropertyDTO.getValue();
 
         List<String> list = new ArrayList<>();
         if ("draft".equalsIgnoreCase(type)) {
-            list = VsacUtils.getProfileList(uri, username, password);
+            list = VsacUtils.getProfileList(uri, apiKey);
         } else if ("published".equalsIgnoreCase(type)) {
-            list = VsacUtils.getVersionList(uri, username, password, oid);
+            list = VsacUtils.getVersionList(uri, apiKey, oid);
         } else {
             throw new MtsException("Type not supported: " + type);
         }
